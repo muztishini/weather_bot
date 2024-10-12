@@ -4,6 +4,7 @@ from models import Log, SessionLocal
 from typing import Optional
 from datetime import datetime
 
+
 app = FastAPI()
 db = SessionLocal()
 
