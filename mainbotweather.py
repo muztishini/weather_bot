@@ -35,7 +35,7 @@ async def command_start_handler(message: Message):
 @dp.message(Command('weather'))
 async def process_weather_command(message: types.Message):
     """
-    По команде /weather <city_name> возвращает погоду в указанном городе на данный момент
+    По команде '/weather <city_name>' возвращает погоду в указанном городе на данный момент
     """
     try:
         city = message.text.split(' ')[1]

@@ -1,11 +1,11 @@
 import uvicorn
+import asyncio
+import logging
+import sys
 from fastapi import FastAPI
 from apirouter import apirouter
 from mainbotweather import telegramrouter, dp
 from threading import Thread
-import asyncio
-import logging
-import sys
 from aiogram import Bot
 from config import tg_bot_token
 from aiogram.client.default import DefaultBotProperties
