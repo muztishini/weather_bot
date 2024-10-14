@@ -2,6 +2,7 @@ from fastapi.testclient import TestClient
 from main import app
 from typing import List
 
+
 client = TestClient(app)
 
 
