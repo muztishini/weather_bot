@@ -25,7 +25,7 @@ def add_base(userid, command, datatime, answer):
 @dp.message(CommandStart())
 async def command_start_handler(message: Message):
     """
-    Отправляет приветственное сообщение
+    Отправляет приветственное сообщение.
     """
     await message.answer(f"Привет, {hbold(message.from_user.full_name)}! Чтобы узнать какая сейчас погода, напиши "
                          f"команду '/weather' и название города.")

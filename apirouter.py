@@ -38,5 +38,5 @@ def get_user_logs(user_id: str, skip: int = 0, limit: int = 10, start_time: Opti
 
     logs = query.filter(Log.userid == user_id).offset(skip).limit(limit).all()
     if not logs:
-        raise HTTPException(status_code=404, detail="Логи не найдены для этого пользователя.")
+        raise HTTPException(status_code=404, detail="Логи не найдены для этого пользователя")
     

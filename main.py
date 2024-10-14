@@ -30,6 +30,7 @@ async def main():
 
 if __name__ == "__main__":    
     # Запускаем FastApi в отдельном потоке
+
     Thread(target=start_fast).start()
     logging.basicConfig(level=logging.INFO, stream=sys.stdout)
     asyncio.run(main())
