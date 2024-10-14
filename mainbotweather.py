@@ -1,20 +1,17 @@
-import asyncio
-import logging
-import sys
 import requests
 from datetime import datetime
-from aiogram.client.default import DefaultBotProperties
-from config import tg_bot_token, open_weather_token
+from config import open_weather_token
 from models import Log, SessionLocal
-from aiogram import Bot, Dispatcher, types
-from aiogram.enums import ParseMode
+from aiogram import Dispatcher, types
 from aiogram.filters import CommandStart, Command
 from aiogram.types import Message
 from aiogram.utils.markdown import hbold
+from fastapi import APIRouter
 
 
 dp = Dispatcher()
 db = SessionLocal()
+telegramrouter = APIRouter()
 
 
 def add_base(userid, command, datatime, answer):
@@ -24,14 +21,22 @@ def add_base(userid, command, datatime, answer):
     db.refresh(log)
 
 
+@telegramrouter.get("/start")
 @dp.message(CommandStart())
 async def command_start_handler(message: Message):
+    """
+    Отправляет приветственное сообщение
+    """
     await message.answer(f"Привет, {hbold(message.from_user.full_name)}! Чтобы узнать какая сейчас погода, напиши "
                          f"команду '/weather' и название города.")
 
 
+@telegramrouter.get("/weather {city_name}")
 @dp.message(Command('weather'))
 async def process_weather_command(message: types.Message):
+    """
+    По команде /weather <city_name> возвращает погоду в указанном городе на данный момент
+    """
     try:
         city = message.text.split(' ')[1]
         response = requests.get(
@@ -72,13 +77,3 @@ async def process_weather_command(message: types.Message):
         answer = "Пожалуйста, укажите город после команды /weather"
         add_base(userid, command, datetimes, answer)
         await message.answer(answer)
-
-
-async def main():
-    bot = Bot(token=tg_bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
-    await dp.start_polling(bot)
-
-
-if __name__ == "__main__":
-    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
-    asyncio.run(main())

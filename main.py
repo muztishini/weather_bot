@@ -1,47 +1,35 @@
 import uvicorn
-from fastapi import FastAPI, HTTPException
-from models import Log, SessionLocal
-from typing import Optional
-from datetime import datetime
+from fastapi import FastAPI
+from apirouter import apirouter
+from mainbotweather import telegramrouter, dp
+from threading import Thread
+import asyncio
+import logging
+import sys
+from aiogram import Bot
+from config import tg_bot_token
+from aiogram.client.default import DefaultBotProperties
+from aiogram.enums import ParseMode
 
 
 app = FastAPI()
-db = SessionLocal()
 
 
-@app.get("/logs")
-def get_logs(skip: int = 0, limit: int = 10, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None):
-    """
-    Возвращает список всех запросов с информацией о пользователе и времени запроса.
-    """
-    query = db.query(Log)
-
-    if start_time:
-        query = query.filter(Log.datatime >= start_time)
-    if end_time:
-        query = query.filter(Log.datatime <= end_time)
-
-    logs = query.offset(skip).limit(limit).all()
-    return logs
+app.include_router(apirouter, tags=["Api methods"])
+app.include_router(telegramrouter, tags=["Telegram commands"])
 
 
-@app.get("/logs/{user_id}")
-def get_user_logs(user_id: str, skip: int = 0, limit: int = 10, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None):
-    """
-    Возвращает запросы конкретного пользователя.
-    """
-    query = db.query(Log)
-
-    if start_time:
-        query = query.filter(Log.datatime >= start_time)
-    if end_time:
-        query = query.filter(Log.datatime <= end_time)
-
-    logs = query.filter(Log.userid == user_id).offset(skip).limit(limit).all()
-    if not logs:
-        raise HTTPException(status_code=404, detail="Logs not found for this user")
-    return logs
-
-
-if __name__ == "__main__":
+def start_fast():
     uvicorn.run(app)
+    
+    
+async def main():
+    bot = Bot(token=tg_bot_token, default=DefaultBotProperties(parse_mode=ParseMode.HTML))
+    await dp.start_polling(bot)
+
+
+if __name__ == "__main__":    
+    # Запускаем FastApi в отдельном потоке
+    Thread(target=start_fast).start()
+    logging.basicConfig(level=logging.INFO, stream=sys.stdout)
+    asyncio.run(main())
