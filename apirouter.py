@@ -9,7 +9,7 @@ apirouter = APIRouter()
 
 
 @apirouter.get("/logs")
-def get_logs(skip: int = 0, limit: int = 10, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None):
+async def get_logs(skip: int = 0, limit: int = 10, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None):
     """
     Возвращает список всех запросов с информацией о пользователе и времени запроса.
     """
@@ -25,7 +25,7 @@ def get_logs(skip: int = 0, limit: int = 10, start_time: Optional[datetime] = No
 
 
 @apirouter.get("/logs/{user_id}")
-def get_user_logs(user_id: str, skip: int = 0, limit: int = 10, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None):
+async def get_user_logs(user_id: int, skip: int = 0, limit: int = 10, start_time: Optional[datetime] = None, end_time: Optional[datetime] = None):
     """
     Возвращает запросы конкретного пользователя.
     """
@@ -39,4 +39,4 @@ def get_user_logs(user_id: str, skip: int = 0, limit: int = 10, start_time: Opti
     logs = query.filter(Log.userid == user_id).offset(skip).limit(limit).all()
     if not logs:
         raise HTTPException(status_code=404, detail="Логи не найдены для этого пользователя")
-    
+    return logs

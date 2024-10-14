@@ -42,7 +42,6 @@ async def process_weather_command(message: types.Message):
         response = requests.get(
             f"http://api.openweathermap.org/data/2.5/weather?q={city}&appid={open_weather_token}&units=metric&lang=ru"
         )
-
         userid = message.from_user.id
         command = message.text
         datetimes = datetime.now().strftime('%Y-%m-%d %H:%M')
